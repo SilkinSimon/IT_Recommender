@@ -3,11 +3,13 @@ import logging
 import os
 
 DB_NAME = "bot_database.db"
+SQL_FILE = os.path.join("database", "init_database.sql")
 
 
 async def init_db():
     """
-    Создает таблицы в базе данных и заполняет их, если они пустые.
+    Создает таблицы в базе данных и автоматически заполняет их,
+    если они пустые.
     """
     async with aiosqlite.connect(DB_NAME) as db:
         await db.execute('''
@@ -42,12 +44,19 @@ async def init_db():
                 'SELECT COUNT(*) FROM developer_tools') as cursor:
             count = await cursor.fetchone()
 
-            if count[0] == 0 and os.path.exists("init_database.sql"):
-                with open("init_database.sql", "r", encoding="utf-8") as file:
-                    sql_script = file.read()
-                    await db.executescript(sql_script)
+            if count[0] == 0:
                 logging.info(
-                    "База данных автоматически заполнена!")
+                    "Таблица инструментов пуста. Начинаю загрузку базы...")
+
+                if os.path.exists(SQL_FILE):
+                    with open(SQL_FILE, "r", encoding="utf-8") as file:
+                        sql_script = file.read()
+                        await db.executescript(sql_script)
+                    logging.info(
+                        "База данных автоматически заполнена.")
+                else:
+                    logging.error(
+                        f"Ошибка: Файл {SQL_FILE} не найден! Заполнения нет.")
 
         await db.commit()
-        logging.info("База данных успешно инициализирована.")
+        logging.info("База данных успешно инициализирована и готова к работе.")
