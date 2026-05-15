@@ -2,18 +2,15 @@ from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 from aiogram import Bot, Dispatcher, types
 
-from configuration import BOT_TOKEN
+from configuration import BOT_TOKEN, WEBHOOK_HOST
 from bot.handlers import router
 from database.connection import init_db
 
 
 WEBHOOK_PATH = f"/bot/{BOT_TOKEN}"
 
-# ВНИМАНИЕ: Сюда нужно будет вписать реальный адрес твоего будущего сервера,
-# который ты купишь или настроишь (например, https://my-recommender-domain.com)
-SERVER_URL = "https://домен.ру"
+SERVER_URL = WEBHOOK_HOST
 
-# Инициализируем бота и диспетчер
 if BOT_TOKEN:
     bot = Bot(token=BOT_TOKEN)
 dispatcher = Dispatcher()
