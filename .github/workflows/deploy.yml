@@ -17,5 +17,5 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd /opt/IT_Recommender
-            git pull origin main
+            git fetch --all && git reset --hard origin/main
             docker compose up -d --build
